@@ -20,7 +20,12 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         customView.hero.id = "cv"
         self.navigationController?.hero.isEnabled = true
-        MessagesServices.get()
+        MessagesServices.get(sucess: { (messages) in
+            print(messages.count)
+        }) { (error) in
+            guard let error = error else { print("error"); return }
+            print(error)
+        }
     }
 
     @IBAction func toA(_ sender: UIButton) {

@@ -10,12 +10,16 @@ import Foundation
 import Just
 
 class MessagesServices {
-    class func get() {
+    class func get(sucess: @escaping (_ messages: [Message]) -> Void, failure: @escaping (_ error: Error?) -> Void) {
         Just.get(URL(string: RoutesUrls.getMessages.rawValue)!) { r in
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .formatted(Formatter.iso8601)
-            let messages = try! decoder.decode([Message].self, from: r.content!)
-            print(messages.count)
+            do {
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .formatted(Formatter.iso8601)
+                let messages = try decoder.decode([Message].self, from: r.content!)
+                sucess(messages)
+            } catch {
+                failure(nil)
+            }
         }
     }
 }
