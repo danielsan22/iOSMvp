@@ -1,0 +1,13 @@
+Model
+- Is defined by a protocol
+- contains app state
+
+
+View
+- Manages view related configurations
+- Manages Delegates (not datasources) (For tableView & collectionView)
+
+
+Presenter
+- Needs a model to work with
+- This should
