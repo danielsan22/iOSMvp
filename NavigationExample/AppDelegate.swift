@@ -7,15 +7,29 @@
 //
 
 import UIKit
+import Compass
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    var defaultRouter = Router()
+    var mainVC: UINavigationController?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+        mainVC = UINavigationController(rootViewController: initialViewController)
+        
+        setupRouting()
+        
+        self.window?.rootViewController = mainVC
+        self.window?.makeKeyAndVisible()
+        
+        
         return true
     }
 
@@ -39,6 +53,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func setupRouting() {
+        Navigator.scheme = "dsr"
+        defaultRouter.routes = [
+            "a": ARoute(),
+            "b": BRoute()
+        ]
+        
+        Navigator.routes = Array(defaultRouter.routes.keys)
+        Navigator.handle = { [weak self] location in
+            guard let selectedController = self?.mainVC else { return }
+            
+            let currentController = (selectedController as UINavigationController).topViewController ?? selectedController
+            self?.defaultRouter.navigate(to: location, from: currentController)
+        }
+        
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        try? Navigator.navigate(url: url)
+        return true
     }
 
 
